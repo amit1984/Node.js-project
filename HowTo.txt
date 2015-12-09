@@ -1,0 +1,11 @@
+steps
+
+1. please install node.js and mysql.
+
+2. go to the command prompt then type: node server.js
+
+3.open the browser type: http://localhost:8080
+
+4. index page will come please register and then login.
+
+5. throw the dice and play the game.

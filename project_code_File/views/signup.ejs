@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="Expand, contract, animate forms with jQuery wihtout leaving the page" />
+    <meta name="keywords" content="expand, form, css3, jquery, animate, width, height, adapt, unobtrusive javascript"/>
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+	 <style>
+		    	body 		{ padding-top:80px; }
+         </style> 
+  </head>
+  <body>
+    <div class="wrapper">
+
+      <div class="content">
+        <div id="form_wrapper" class="form_wrapper">
+          <!-- show any messages that come back with authentication -->
+          <% if (message.length > 0) { %>
+          <div class="alert alert-danger">
+            <%= message %>
+          </div>
+          <% } %>
+          <form class="login active" action="/signup" method="post">
+            
+            <h3>Register</h3>
+            <div>
+              <label>Username:</label>
+              <input type="text" class="form-control" name="username"/>
+              <span class="error">This is an error</span>
+            </div>
+            <div>
+              <label>
+                Password: <a href="forgot_password.html" rel="forgot_password" class="forgot linkform">Forgot your password?</a>
+              </label>
+              <input type="password" class="form-control" name="password"/>
+              <span class="error">This is an error</span>
+            </div>
+            <div class="bottom">
+              <div class="remember">
+                <input type="checkbox" class="form-control" name="remember" value="yes"/>
+                <span>Keep me logged in</span>
+              </div>
+              <button type="submit" class="btn btn-warning btn-lg">Signup</button>
+             
+              <a href="/login" rel="register" class="linkform">go back to login</a>
+                 <a href="/"  class="linkform">home</a>
+              <div class="clear"></div>
+            </div>
+          </form>
+          <form class="forgot_password">
+            <h3>Forgot Password</h3>
+            <div>
+              <label>Username or Email:</label>
+              <input type="text" />
+              <span class="error">This is an error</span>
+            </div>
+            <div class="bottom">
+              <input type="submit" value="Send reminder"></input>
+              <a href="/signup" rel="login" class="linkform">Suddenly remebered? Log in here</a>
+              <a href="/signup">Signup</a>
+              <div class="clear"></div>
+            </div>
+          </form>
+        </div>
+        <div class="clear"></div>
+      </div>
+
+    </div>
+
+
+
+  </body>
+</html>
+
+

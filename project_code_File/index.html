@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+   <!-- <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>-->
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form action="submit">
+       
+                     <img id="img" src="./img/d1.gif"  style="width:30px;height:30px">
+               
+                     <input id="m" autocomplete="off" /><button>Send</button>
+               
+    </form>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <canvas id="canvas" width="420px" height="420px" style="background: #fff;     magrin:20px;"></canvas>
+    <img src="./img/d1.gif" name="mydice">
+    <img src="rbtn.png" id="player1" style="position:absolute; left: 500px; top: 100px; height:15px; width: 15px;" />
+    <input type="button" value="Throw dice!" onClick="drag()">
+    <script type="text/javascript" language="javascript">
+        function drag(){
+
+            alert(document.getElementById('player1').style.top )
+        }
+        var bw = 400;
+        var bh = 400;
+        var p = 10;
+        var cw = bw + (p*2) + 1;
+        var ch = bh + (p*2) + 1;
+
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        function drawBoard(){
+            for (var x = 0; x <= bw; x += 40) {
+                context.moveTo(0.5 + x + p, p);
+                context.lineTo(0.5 + x + p, bh + p);
+
+            }
+
+
+            for (var x = 0; x <= bh; x += 40) {
+                context.moveTo(p, 0.5 + x + p);
+                context.fillText(x,p, 0.5 + x + p);
+                context.lineTo(bw + p, 0.5 + x + p);
+
+            }
+
+
+            context.strokeStyle = "black";
+            context.stroke();
+
+            function loadImages(sources, callback) {
+                var images = {};
+                var loadedImages = 0;
+                var numImages = 0;
+                // get num of sources
+                for(var src in sources) {
+                    numImages++;
+                }
+                for(var src in sources) {
+                    images[src] = new Image();
+                    images[src].onload = function() {
+                        if(++loadedImages >= numImages) {
+                            callback(images);
+                        }
+                    };
+                    images[src].src = sources[src];
+                }
+            }
+
+            var sources = {
+                darthVader: 'snake.gif',
+                yoda: 'snake2.png',
+                yoda1: 'snake2.png',
+                ladder1: 'ladder2.png',
+                ladder2: 'ladder2.png',
+                ladder3: 'ladder2.png',
+                rbtn: 'rbtn.png'
+            };
+
+            loadImages(sources, function(images) {
+                context.drawImage(images.darthVader, 100, 30, 150, 137);
+                context.drawImage(images.ladder2, 330, 40, 30, 104);
+                context.drawImage(images.ladder1, 330, 300, 30, 104);
+                context.drawImage(images.yoda, 150,200, 120, 150);
+                context.drawImage(images.yoda1, 250,200, 70, 70);
+                context.drawImage(images.ladder3, 50, 200, 30, 104);
+                context.drawImage(images.rbtn, 50, 200, 30, 40);
+            });
+
+
+        }
+
+        drawBoard();
+
+        function move_img() {
+
+
+            alert("ok");
+        }
+        function throwdice()
+        {
+            var face0=new Image()
+            face0.src="./img/d1.gif"
+            var face1=new Image()
+            face1.src="./img/d2.gif"
+            var face2=new Image()
+            face2.src="./img/d3.gif"
+            var face3=new Image()
+            face3.src="./img/d4.gif"
+            var face4=new Image()
+            face4.src="./img/d5.gif"
+            var face5=new Image()
+            face5.src="./img/d6.gif"
+            var randomdice=Math.round(Math.random()*5)
+            document.images["mydice"].src=eval("face"+randomdice+".src")
+            var x=document.getElementById('player1').offsetTop;
+            x= x +100;
+            document.getElementById('player1').style.top= x + "px";
+        }
+
+      var socket = io();
+      $('form').submit(function () {
+          var ms = Math.round(Math.random() * 5);
+          var name = $('#m').val();
+          var y = document.getElementById('player1').offsetTop;
+          var x = document.getElementById('player1').offsetLeft;
+          
+          socket.emit('chat message', { mx: x, my: 400,yy: 500,zz:560 });
+         
+         // socket.emit('mouse_position', { mx: x, my: y });
+        //$('#m').val('');
+        return false;
+      });
+      socket.on('chat message', function(msg){
+         // $('#messages').append($('<li>').text(msg.mx +':'+ msg.my));
+          var face0=new Image()
+          face0.src="./img/d1.gif"
+          var face1=new Image()
+          face1.src="./img/d2.gif"
+          var face2=new Image()
+          face2.src="./img/d3.gif"
+          var face3=new Image()
+          face3.src="./img/d4.gif"
+          var face4=new Image()
+          face4.src="./img/d5.gif"
+          var face5=new Image()
+          face5.src="./img/d6.gif"
+          var randomdice=Math.round(Math.random()*5)
+          //document.images["mydice"].src = eval("face" + msg.name1 + ".src")      
+          $('#messages').append($('<li>').text(msg.mx + ':' + msg.yy+':' + msg.yy));
+          
+              document.getElementById('player1').style.left = msg.mx + 'px';
+              document.getElementById('player1').style.top = msg.my + 'px';
+         
+
+      });
+    </script>
+  </body>
+</html>

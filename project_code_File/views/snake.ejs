@@ -1,0 +1,424 @@
+<!doctype html>
+<html>
+<head>
+    <title>snake and ladder</title>
+    <!-- <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       body { font: 13px Helvetica, Arial; }
+       form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+       form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+       form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+       #messages { list-style-type: none; margin: 0; padding: 0; }
+       #messages li { padding: 5px 10px; }
+       #messages li:nth-child(odd) { background: #eee; }
+     </style>-->
+	 <style>
+	 .three{
+font-family: Garamond, serif;
+line-height: 1em;
+color: #6B2447;
+font-weight:bold;
+font-size: 25px;
+text-shadow:0px 0px 0 rgb(231,231,231),1px 1px 0 rgb(216,216,216),2px 2px 0 rgb(202,202,202),3px 3px 0 rgb(187,187,187),4px 4px 0 rgb(173,173,173),5px 5px 0 rgb(158,158,158), 6px 6px 0 rgb(144,144,144),7px 7px 6px rgba(0,0,0,0.6),7px 7px 1px rgba(0,0,0,0.5),0px 0px 6px rgba(0,0,0,.2);}
+
+.btnu {
+	position: relative;
+    color: rgba(255,255,255,1);
+    text-decoration: none;
+    background-color: rgba(219,87,5,1);
+    font-family: 'Yanone Kaffeesatz';
+    font-weight: 700;
+    font-size: 40;
+    display: block;
+    padding: 4px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0px 9px 0px rgba(219,31,5,1), 0px 9px 25px rgba(0,0,0,.7);
+    -moz-box-shadow: 0px 9px 0px rgba(219,31,5,1), 0px 9px 25px rgba(0,0,0,.7);
+    box-shadow: 0px 9px 0px rgba(219,31,5,1), 0px 9px 25px rgba(0,0,0,.7);
+    margin: 100px auto;
+	width: 160px;
+	text-align: center;
+	
+	-webkit-transition: all .1s ease;
+	-moz-transition: all .1s ease;
+	-ms-transition: all .1s ease;
+	-o-transition: all .1s ease;
+	transition: all .1s ease;
+}
+
+
+</style>
+</head>
+
+<body  onload="fn()" style="background-image: url('../img/snakean.jpg'); height:65px; width: 65px;">
+<img id="image1" src="image1.png" style="position:absolute; left: 10px; top: 590px; height:65px; width: 65px;" />
+<img id="image2" src="image2.png" style="position:absolute; left: 15px; top: 580px; height:65px; width: 65px;" />
+ 
+<canvas id="board" width="650" height="650">
+    </canvas>
+<form action="submit">
+<div>
+<div id="userlog" style="float: right;" class="three">
+<strong>Hi</strong> <%= user.username %>  </strong>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/login" class="btn"> <img src="img/logout.png" height="42" width="42"/></a>
+</div>
+<div id="yourDivId" style="float: right;">
+    <button class="btnu">Throw dice!!!!</button>
+	 
+<!-- <ul id="messages"></ul> -->
+</form>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<img src="./img/d1.gif" name="mydice" style="align:right"  />
+</div>
+<div style="float: left;background-color: #ccffcc;">
+<script type="text/javascript" language="javascript">
+var n = "<%= count %>";
+     function placeDiv(x_pos, y_pos) {
+  var d = document.getElementById('yourDivId');
+  d.style.position = "absolute";
+  d.style.left = x_pos+'px';
+  d.style.top = y_pos+'px';
+}
+ function placeDiv1(x_pos, y_pos) {
+  var d = document.getElementById('userlog');
+  d.style.position = "absolute";
+  d.style.left = x_pos+'px';
+  d.style.top = y_pos+'px';
+}
+function sound()
+{
+var audio = new Audio('brush.wav');
+            audio.play();return true;
+}
+ function fn() {
+            var nam = "<%= user.username %>";
+            var msg = new SpeechSynthesisUtterance('welcome to the game of snake and ladder'+nam);
+            window.speechSynthesis.speak(msg);
+            audio.play();
+            tts.translate('en', 'dog', function (result) {
+                console.log(result);
+                if (result.success) { //check for success
+                    var response = { 'audio': result.data };
+                    socket.emit('ttsResult', response); //emit the audio to client
+                }
+            });
+			
+			
+        }
+		
+      placeDiv(700, 100);
+	  placeDiv1(1000, 10);
+      var squares = new Array();
+
+        var canvas = document.getElementById("board");
+        var context = canvas.getContext("2d");
+        var contextText = canvas.getContext("2d");
+        var squareSize = canvas.height / 10;
+           
+        var _currentPos = 0;
+        
+        RenderSquareBoard();
+        RenderSnakeAndLadders();      
+
+        function RenderSquareBoard() 
+        {        
+            var colorA = "#d3d3d3";
+            var colorB = "aqua";
+
+            var initRow = 1; var totalRows = 10; var initcolumn = 1; var totalColumns = 10;
+
+            var x = 0; var y = canvas.height - squareSize;
+
+            var columnNr = 1; var leftToRight = true;
+            for (var row = initRow; row <= totalRows; row++) 
+            {
+                if (leftToRight) 
+                {
+                    x = 0;
+                }
+                else 
+                {
+                    x = canvas.width - squareSize;
+                }
+
+                for (var column = initcolumn; column <= totalColumns; column++) 
+                {
+                    if (columnNr % 2 == 0) 
+                    {
+                        context.fillStyle = colorA;
+                    }
+                    else 
+                    {
+                        context.fillStyle = colorB;
+                    }
+
+                    context.fillRect(x, y, squareSize, squareSize);
+
+                    squares[columnNr] = x.toString() + ',' + y.toString();
+
+                    contextText.font = "15px tahoma";
+                    contextText.fillStyle = "black";
+                    contextText.fillText(columnNr, x, y + squareSize);
+
+                    var x1, y1
+                    if (leftToRight) 
+                    {
+                        x += squareSize;
+
+                        x1 = x + (squareSize / 2);
+                    }
+                    else 
+                    {
+                        x -= squareSize;
+                        x1 = x - (squareSize / 2);
+                    }
+
+                    y1 = y - (squareSize / 2);
+
+                    columnNr++;
+                }
+
+                y -= squareSize;
+                leftToRight = !leftToRight;
+            }
+        }
+
+        function RenderSnakeAndLadders()
+        {
+            var img = new Image();
+            img.onload = function () 
+            {
+            context.drawImage(img, 66, 23, 200, 150);
+            };
+            img.src = "Images/SnakeA.gif";
+
+            var img1 = new Image();
+            img1.onload = function () 
+            {
+            context.drawImage(img1, 200, 176, 200, 150);
+            };
+            img1.src = "Images/SnakeB.gif";
+
+            var img2 = new Image();
+            img2.onload = function () {
+                context.drawImage(img2, 57, 166);
+            };
+            img2.src = "Images/LadderA.gif";
+
+            var img3 = new Image();
+            img3.onload = function () 
+            {
+                context.drawImage(img3, 322, 366);
+            };
+            img3.src = "Images/LadderA.gif"; 
+			var img4 = new Image();
+            img4.onload = function () 
+            {
+            context.drawImage(img4, 350, 406, 200, 150);
+            };
+            img4.src = "Images/SnakeB.gif";           
+        }
+
+        function initGame() 
+        {
+            window.location.reload();           
+        }
+
+        function GenerateRandomNumber(max) 
+        {
+            // max dictates that the random number will fall between 0-max
+            var rnd = Math.floor(Math.random() * (max + 1))
+
+            if (rnd == 0)
+            {
+                rnd = 1;
+            }
+        return rnd;
+        }
+
+      var socket = io();
+      $('form').submit(function () {
+		
+		    var c1 = "<%= count %>";
+		    if(c1==1)
+			{
+            var newMove = GenerateRandomNumber(6);
+           // alert("You got : " + newMove);
+
+            _currentPos = _currentPos + newMove;
+		//	alert("You got : " + _currentPos);
+			if(_currentPos > 100)
+			{
+			_currentPos = _currentPos - newMove;
+			}
+            switch (_currentPos) 
+            {
+            //ladder
+            case 6:
+            _currentPos = 46;
+			 var audio = new Audio('drum.wav');
+             audio.play();
+            break;
+            //ladder
+            case 39:
+            _currentPos = 79;
+			 var audio = new Audio('drum.wav');
+             audio.play();
+            break;
+            //snake
+            case 99:
+            _currentPos = 84;
+			 var audio = new Audio('brush.wav');
+             audio.play();
+            break;
+            //snake
+            case 66:
+            _currentPos = 57;
+			var audio = new Audio('brush.wav');
+            audio.play();
+            break;  
+			 //snake
+            case 33:
+            _currentPos = 15;
+			var audio = new Audio('brush.wav');
+            audio.play();
+            break;                
+            }
+		
+            var coorintaes = squares[_currentPos];
+            coorintaes = coorintaes.split(',');
+           // var element = document.getElementById("image1");
+           // element.style.left = coorintaes[0] + 'px';
+            // element.style.top = coorintaes[1] + 'px';
+			var rr = coorintaes[0];
+			var uu = coorintaes[1];
+           // document.getElementById('image1').style.left = coorintaes[0] + 'px';
+           // document.getElementById('image1').style.top = coorintaes[1] +'px';
+            //context.fillRect(coorintaes[0], coorintaes[1], squareSize, squareSize);
+			 if (_currentPos == 100)
+            {
+               // alert("Congratulations, you have won the game :)");
+				var audio = new Audio('gonul.wav');
+                audio.play();
+               // initGame();
+            }
+			
+			}
+			else
+			{
+            var newMove = GenerateRandomNumber(6);
+           // alert("You got : " + newMove);
+
+            _currentPos = _currentPos + newMove;
+		//	alert("You got : " + _currentPos);
+			if(_currentPos > 100)
+			{
+			_currentPos = _currentPos - newMove;
+			}
+            switch (_currentPos) 
+            {
+            //ladder
+            case 6:
+            _currentPos = 46;
+			 var audio = new Audio('drum.wav');
+             audio.play();
+            break;
+            //ladder
+            case 39:
+            _currentPos = 79;
+			 var audio = new Audio('drum.wav');
+             audio.play();
+            break;
+            //snake
+            case 99:
+            _currentPos = 84;
+			 var audio = new Audio('brush.wav');
+             audio.play();
+            break;
+            //snake
+            case 66:
+            _currentPos = 57;
+			var audio = new Audio('brush.wav');
+            audio.play();
+            break;  
+			 //snake
+            case 33:
+            _currentPos = 15;
+			var audio = new Audio('brush.wav');
+            audio.play();
+            break;                     
+            }
+
+            var coorintaes = squares[_currentPos];
+            coorintaes = coorintaes.split(',');
+           // var element = document.getElementById("image1");
+           // element.style.left = coorintaes[0] + 'px';
+            // element.style.top = coorintaes[1] + 'px';
+			var rr = coorintaes[0];
+			var uu = coorintaes[1];
+           // document.getElementById('image1').style.left = coorintaes[0] + 'px';
+           // document.getElementById('image1').style.top = coorintaes[1] +'px';
+            //context.fillRect(coorintaes[0], coorintaes[1], squareSize, squareSize);
+			
+
+           if (_currentPos == 100)
+            {
+               // alert("Congratulations, you have won the game :)");
+				var audio = new Audio('gonul.wav');
+                audio.play();
+               // initGame();
+            }
+			
+        
+          }
+
+  
+      //  var ms = Math.round(Math.random() * 5);
+           var c = "<%= count %>";   
+       // var y = document.getElementById('img').offsetTop;
+       // var x = document.getElementById('img').offsetLeft;
+        socket.emit('chat message', { name1: newMove,name2: c,yy:rr,xx: uu });
+        return false;
+    });
+    socket.on('chat message', function(msg){
+        $('#messages').append($('<li>').text(msg.name2 + msg.name1 + msg.yy));
+        var face1=new Image()
+        face1.src="./img/d1.gif"
+        var face2=new Image()
+        face2.src="./img/d2.gif"
+        var face3=new Image()
+        face3.src="./img/d3.gif"
+        var face4=new Image()
+        face4.src="./img/d4.gif"
+        var face5=new Image()
+        face5.src="./img/d5.gif"
+        var face6=new Image()
+        face6.src="./img/d6.gif"
+        var randomdice=Math.round(Math.random()*5)
+        document.images["mydice"].src=eval("face"+msg.name1+".src")
+		//var name = "<%= user.username %>";
+		
+      //  var n = str1.localeCompare(msg.name2);
+	
+
+	switch (parseInt(msg.name2)) 
+        {
+          case 1:
+		  document.getElementById('image1').style.left = msg.yy + 'px';
+          document.getElementById('image1').style.top = msg.xx +'px';
+	      break;
+		
+          case 2:
+		  document.getElementById('image2').style.left = msg.yy + 'px';
+          document.getElementById('image2').style.top = msg.xx +'px';
+		  break;
+		}  
+
+    });
+</script>
+</div>
+</div>
+</body>
+</html>
